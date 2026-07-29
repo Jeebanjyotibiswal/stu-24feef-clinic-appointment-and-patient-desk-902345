@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CalendarPlus, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  CalendarPlus,
+  ArrowLeft,
+  User,
+  Stethoscope,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Save,
+  Activity
+} from "lucide-react";
 
 function Edit_appointment() {
   const { id } = useParams();
@@ -103,7 +116,7 @@ function Edit_appointment() {
       }
 
       setMessage("✅ Appointment updated successfully.");
-      setTimeout(() => navigate(-1), 1200);
+      setTimeout(() => navigate(-1), 1000);
     } catch (err) {
       setMessage(`❌ ${err.message}`);
     } finally {
@@ -112,76 +125,158 @@ function Edit_appointment() {
   };
 
   return (
-    <div style={{ maxWidth: 720, margin: "40px auto", padding: 24, background: "#fff", borderRadius: 16, boxShadow: "0 10px 30px rgba(0,0,0,0.08)" }}>
-      <button onClick={() => navigate(-1)} style={{ border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, color: "#2563eb", marginBottom: 16 }}>
-        <ArrowLeft size={18} /> Back
+    <div className="max-w-3xl mx-auto py-6 space-y-6">
+      <button
+        onClick={() => navigate(-1)}
+        className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        <ArrowLeft size={16} /> Back
       </button>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-        <CalendarPlus size={24} color="#2563eb" />
-        <h2 style={{ margin: 0 }}>Edit Appointment</h2>
-      </div>
-
-      {loadingData ? (
-        <p>Loading appointment details...</p>
-      ) : (
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14 }}>
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={{ fontWeight: 600 }}>Patient</label>
-            <select name="patient_id" value={formData.patient_id} onChange={handleChange} required style={inputStyle}>
-              <option value="">Select Patient</option>
-              {patients.map((patient) => (
-                <option key={patient.patient_id} value={patient.patient_id}>{patient.full_name}</option>
-              ))}
-            </select>
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-2xl space-y-6"
+      >
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-teal-500 text-white flex items-center justify-center shadow-md">
+            <CalendarPlus size={24} />
           </div>
-
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={{ fontWeight: 600 }}>Doctor</label>
-            <select name="doctor_id" value={formData.doctor_id} onChange={handleChange} required style={inputStyle}>
-              <option value="">Select Doctor</option>
-              {doctors.map((doctor) => (
-                <option key={doctor.doctor_id} value={doctor.doctor_id}>{doctor.name}</option>
-              ))}
-            </select>
+          <div>
+            <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+              Appointment #{id}
+            </span>
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Edit Appointment</h2>
+            <p className="text-xs text-slate-400">Modify appointment date, assigned physician, or status.</p>
           </div>
+        </div>
 
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={{ fontWeight: 600 }}>Appointment Date</label>
-            <input type="date" name="appointment_date" value={formData.appointment_date} onChange={handleChange} required style={inputStyle} />
+        {loadingData ? (
+          <div className="space-y-4 py-8">
+            <div className="h-12 rounded-2xl skeleton-shimmer" />
+            <div className="h-12 rounded-2xl skeleton-shimmer" />
+            <div className="h-12 rounded-2xl skeleton-shimmer" />
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Patient *</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <select
+                    name="patient_id"
+                    value={formData.patient_id}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">Select Patient</option>
+                    {patients.map((patient) => (
+                      <option key={patient.patient_id} value={patient.patient_id}>
+                        {patient.full_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={{ fontWeight: 600 }}>Appointment Time</label>
-            <input type="time" name="appointment_time" value={formData.appointment_time} onChange={handleChange} required style={inputStyle} />
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Doctor *</label>
+                <div className="relative">
+                  <Stethoscope className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <select
+                    name="doctor_id"
+                    value={formData.doctor_id}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">Select Doctor</option>
+                    {doctors.map((doctor) => (
+                      <option key={doctor.doctor_id} value={doctor.doctor_id}>
+                        {doctor.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Date *</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="date"
+                    name="appointment_date"
+                    value={formData.appointment_date}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Time *</label>
+                <div className="relative">
+                  <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="time"
+                    name="appointment_time"
+                    value={formData.appointment_time}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Status *</label>
+                <div className="relative">
+                  <Activity className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white font-bold text-xs shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={16} />}
+              {loading ? "Saving Changes..." : "Update Appointment"}
+            </button>
+          </form>
+        )}
+
+        {message && (
+          <div
+            className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2.5 ${
+              message.includes("✅")
+                ? "bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300"
+                : "bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300"
+            }`}
+          >
+            {message.includes("✅") ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+            <span>{message}</span>
           </div>
-
-          <div style={{ display: "grid", gap: 10 }}>
-            <label style={{ fontWeight: 600 }}>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange} required style={inputStyle}>
-              <option value="Scheduled">Scheduled</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          <button type="submit" disabled={loading} style={{ padding: "12px 16px", border: "none", borderRadius: 10, background: "#2563eb", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-        </form>
-      )}
-
-      {message && <p style={{ marginTop: 16, color: message.includes("✅") ? "#16a34a" : "#b91c1c" }}>{message}</p>}
+        )}
+      </motion.div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "12px 14px",
-  borderRadius: 10,
-  border: "1px solid #d1d5db",
-  fontSize: 14,
-};
 
 export default Edit_appointment;

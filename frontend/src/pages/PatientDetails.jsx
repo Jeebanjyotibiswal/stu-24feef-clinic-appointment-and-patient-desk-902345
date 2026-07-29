@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarDays, User, Clock, FileText, CheckCircle2, XCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  CalendarDays,
+  User,
+  Clock,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  Phone,
+  Mail,
+  MapPin,
+  Activity,
+  Calendar
+} from "lucide-react";
 
 function PatientDetails() {
   const { id } = useParams();
@@ -71,118 +85,193 @@ function PatientDetails() {
 
   const renderStatusChip = (status) => {
     const normalized = String(status || "").toLowerCase();
-    const base = {
-      Scheduled: { bg: "#eff6ff", color: "#2563eb" },
-      Completed: { bg: "#ecfdf5", color: "#16a34a" },
-      Cancelled: { bg: "#fef2f2", color: "#b91c1c" },
-    }[status] || { bg: "#f8fafc", color: "#334155" };
+    const isCompleted = normalized === "completed";
+    const isCancelled = normalized === "cancelled";
+
     return (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: base.bg, color: base.color, fontWeight: 600, fontSize: 13 }}>
-        {normalized === "completed" ? <CheckCircle2 size={14} /> : normalized === "cancelled" ? <XCircle size={14} /> : <Clock size={14} />}
+      <span
+        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+          isCompleted
+            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
+            : isCancelled
+            ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400"
+            : "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
+        }`}
+      >
+        {isCompleted ? <CheckCircle2 size={14} /> : isCancelled ? <XCircle size={14} /> : <Clock size={14} />}
         {status}
       </span>
     );
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", padding: 24, fontFamily: "Arial, sans-serif" }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <button onClick={() => navigate(-1)} style={{ border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, color: "#2563eb", marginBottom: 16 }}>
-          <ArrowLeft size={18} /> Back
-        </button>
+    <div className="space-y-8">
+      <button
+        onClick={() => navigate(-1)}
+        className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        <ArrowLeft size={16} /> Back to List
+      </button>
 
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 8px 24px rgba(0,0,0,0.06)", marginBottom: 20 }}>
-          <div>
-            <p style={{ margin: 0, color: "#2563eb", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.1 }}>Patient Details</p>
-            <h1 style={{ margin: "6px 0 0" }}>{patient?.full_name || "Patient"}</h1>
-            <p style={{ margin: "6px 0 0", color: "#64748b" }}>View patient history, contact details, and appointment timeline.</p>
-          </div>
-          <div style={{ display: "grid", gap: 8, textAlign: "right" }}>
-            <span style={{ color: "#64748b" }}><User size={16} /> {patient?.gender || "-"}</span>
-            <span style={{ color: "#64748b" }}><CalendarDays size={16} /> DOB: {patient?.dob || "-"}</span>
-          </div>
-        </header>
-
-        {error && <p style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</p>}
-
-        <section style={{ display: "grid", gap: 16, marginBottom: 20, gridTemplateColumns: "1fr 1fr" }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
-            <h3 style={{ marginTop: 0 }}>Patient Information</h3>
-            {loading ? (
-              <p style={{ color: "#64748b" }}>Loading patient record...</p>
-            ) : (
-              <div style={{ display: "grid", gap: 12 }}>
-                <InfoRow label="Full Name" value={patient?.full_name || "-"} />
-                <InfoRow label="Phone" value={patient?.phone || "-"} />
-                <InfoRow label="Email" value={patient?.email || "-"} />
-                <InfoRow label="Address" value={patient?.address || "-"} />
-                <InfoRow label="Blood Group" value={patient?.blood_group || "-"} />
-              </div>
-            )}
+      {/* Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 sm:p-8 text-white shadow-2xl shadow-blue-500/20">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-white font-extrabold text-2xl flex items-center justify-center shadow-inner">
+              {(patient?.full_name || "P").charAt(0)}
+            </div>
+            <div>
+              <span className="text-[11px] font-bold text-blue-200 uppercase tracking-wider">
+                Patient Record #{id}
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                {patient?.full_name || "Patient Profile"}
+              </h1>
+              <p className="text-xs text-blue-100 mt-1">
+                Medical history, contact details, and appointment timeline
+              </p>
+            </div>
           </div>
 
-          <div style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
-            <h3 style={{ marginTop: 0 }}>Appointment Summary</h3>
-            {loading ? (
-              <p style={{ color: "#64748b" }}>Loading summary...</p>
-            ) : (
-              <div style={{ display: "grid", gap: 12 }}>
-                <StatLabel label="Total Appointments" value={appointments.length} />
-                <StatLabel label="Upcoming" value={upcoming.length} />
-                <StatLabel label="History" value={history.length} />
-              </div>
-            )}
+          <div className="flex items-center gap-4 text-xs font-semibold bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20">
+            <div>
+              <span className="text-blue-200 block text-[10px] uppercase">Gender</span>
+              <span>{patient?.gender || "-"}</span>
+            </div>
+            <div className="h-6 w-[1px] bg-white/20" />
+            <div>
+              <span className="text-blue-200 block text-[10px] uppercase">DOB</span>
+              <span>{patient?.dob || "-"}</span>
+            </div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <section style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h3 style={{ margin: 0 }}>Appointment History</h3>
-            <p style={{ margin: 0, color: "#64748b" }}>All appointments for this patient.</p>
-          </div>
+      {error && <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-600 text-xs font-semibold">{error}</div>}
+
+      {/* Patient Overview Grid */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Contact Info Card */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-4">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <User size={18} className="text-blue-600 dark:text-blue-400" />
+            Patient Information
+          </h3>
 
           {loading ? (
-            <p style={{ color: "#64748b" }}>Loading appointments...</p>
-          ) : sortedAppointments.length === 0 ? (
-            <p style={{ color: "#64748b" }}>No appointments found.</p>
+            <div className="space-y-3 py-4">
+              <div className="h-10 rounded-2xl skeleton-shimmer" />
+              <div className="h-10 rounded-2xl skeleton-shimmer" />
+            </div>
           ) : (
-            <div style={{ display: "grid", gap: 12 }}>
-              {sortedAppointments.map((appointment) => (
-                <div key={appointment.appointment_id} style={{ border: "1px solid #e2e8f0", borderRadius: 14, padding: 18, display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center" }}>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 700 }}>{appointment.appointment_date} • {appointment.appointment_time}</p>
-                    <p style={{ margin: "6px 0 0", color: "#64748b" }}>Doctor: {appointment.doctor?.name || `ID ${appointment.doctor_id}`}</p>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
-                    {renderStatusChip(appointment.status)}
-                    <button onClick={() => navigate(`/dashboard`)} style={{ border: "none", background: "#2563eb", color: "#fff", borderRadius: 10, padding: "8px 12px", cursor: "pointer" }}>
-                      Back to schedule
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="space-y-3 divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Full Name</span>
+                <span className="font-bold text-slate-900 dark:text-white">{patient?.full_name || "-"}</span>
+              </div>
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Phone Number</span>
+                <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Phone size={13} className="text-blue-500" /> {patient?.phone || "-"}
+                </span>
+              </div>
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Email Address</span>
+                <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Mail size={13} className="text-teal-500" /> {patient?.email || "-"}
+                </span>
+              </div>
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Address</span>
+                <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <MapPin size={13} className="text-purple-500" /> {patient?.address || "-"}
+                </span>
+              </div>
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Blood Group</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 font-bold">
+                  {patient?.blood_group || "N/A"}
+                </span>
+              </div>
             </div>
           )}
-        </section>
-      </div>
-    </div>
-  );
-}
+        </div>
 
-function InfoRow({ label, value }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, color: "#334155" }}>
-      <span style={{ fontWeight: 600 }}>{label}</span>
-      <span>{value}</span>
-    </div>
-  );
-}
+        {/* Appointment Summary Stats */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-4">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Activity size={18} className="text-teal-500" />
+            Appointment Summary
+          </h3>
 
-function StatLabel({ label, value }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-      <span style={{ color: "#64748b" }}>{label}</span>
-      <strong>{value}</strong>
+          <div className="grid grid-cols-3 gap-3 pt-2">
+            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 text-center">
+              <span className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">Total</span>
+              <h4 className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                {appointments.length}
+              </h4>
+            </div>
+            <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/50 text-center">
+              <span className="text-[10px] font-bold uppercase text-teal-600 dark:text-teal-400">Upcoming</span>
+              <h4 className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                {upcoming.length}
+              </h4>
+            </div>
+            <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 text-center">
+              <span className="text-[10px] font-bold uppercase text-purple-600 dark:text-purple-400">History</span>
+              <h4 className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                {history.length}
+              </h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Appointment History Timeline */}
+      <section className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Appointment History</h3>
+          <p className="text-xs text-slate-400">Timeline of past and scheduled consultations</p>
+        </div>
+
+        {loading ? (
+          <div className="space-y-3 py-4">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-16 rounded-2xl skeleton-shimmer" />
+            ))}
+          </div>
+        ) : sortedAppointments.length === 0 ? (
+          <p className="text-xs text-slate-400 py-8 text-center">No appointment history found for this patient.</p>
+        ) : (
+          <div className="space-y-3">
+            {sortedAppointments.map((appointment) => (
+              <div
+                key={appointment.appointment_id}
+                className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    {appointment.appointment_date} • {appointment.appointment_time}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Doctor: {appointment.doctor?.name || `ID ${appointment.doctor_id}`}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {renderStatusChip(appointment.status)}
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all"
+                  >
+                    Back to Schedule
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
