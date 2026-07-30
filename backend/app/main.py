@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Depends  # type: ignore[import]
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func, text
@@ -15,9 +17,19 @@ from app.api.appointment import router as appointment_router
 
 app = FastAPI()
 
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:3000,https://stu-24feef-clinic-appointment-and-kwve.onrender.com",
+    ).split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
