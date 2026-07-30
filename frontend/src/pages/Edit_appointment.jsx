@@ -43,9 +43,9 @@ function Edit_appointment() {
     const fetchData = async () => {
       try {
         const [patientsRes, doctorsRes, appointmentRes] = await Promise.all([
-          fetch("http://127.0.0.1:8001/patients/", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("http://127.0.0.1:8001/doctors", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`http://127.0.0.1:8001/appointments/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         const patientsData = await patientsRes.json().catch(() => []);
@@ -95,7 +95,7 @@ function Edit_appointment() {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8001/appointments/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

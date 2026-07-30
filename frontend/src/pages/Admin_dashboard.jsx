@@ -67,17 +67,17 @@ function Admin_dashboard() {
     const fetchData = async () => {
       try {
         const [statsResponse, doctorsResponse, appointmentsResponse] = await Promise.all([
-          fetch("http://127.0.0.1:8001/admin/stats", {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/stats`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://127.0.0.1:8001/doctors", {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://127.0.0.1:8001/appointments/", {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -147,7 +147,7 @@ function Admin_dashboard() {
   const handleCancelAppointment = async (appointmentId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8001/appointments/${appointmentId}/cancel`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${appointmentId}/cancel`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

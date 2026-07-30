@@ -41,10 +41,10 @@ function PatientDetails() {
     const fetchPatient = async () => {
       try {
         const [patientRes, appointmentsRes] = await Promise.all([
-          fetch(`http://localhost:8001/patients/${id}`, {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/patients/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`http://localhost:8001/appointments/patient/${id}`, {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/patient/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

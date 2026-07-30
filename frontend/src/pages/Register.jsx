@@ -65,7 +65,7 @@ const Register = () => {
     setIsSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:8001/register", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

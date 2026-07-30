@@ -65,9 +65,9 @@ function Receptionist_dashboard() {
     const loadStats = async () => {
       try {
         const [patientsRes, doctorsRes, appointmentsRes] = await Promise.all([
-          fetch("http://127.0.0.1:8001/patients/", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("http://127.0.0.1:8001/doctors", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("http://127.0.0.1:8001/appointments/", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         const patientsData = await patientsRes.json().catch(() => []);
         const doctorsData = await doctorsRes.json().catch(() => []);
@@ -104,7 +104,7 @@ function Receptionist_dashboard() {
   const handleCancelAppointment = async (appointmentId) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://127.0.0.1:8001/appointments/${appointmentId}/cancel`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${appointmentId}/cancel`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       });

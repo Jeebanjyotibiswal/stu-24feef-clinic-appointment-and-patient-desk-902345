@@ -61,7 +61,7 @@ function Dashboard() {
         let appointmentList = [];
 
         if (storedRole === "doctor") {
-          const doctorsRes = await fetch("http://localhost:8001/doctors", { headers: { Authorization: `Bearer ${token}` } });
+          const doctorsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, { headers: { Authorization: `Bearer ${token}` } });
           const doctorsData = await doctorsRes.json().catch(() => []);
           doctorList = Array.isArray(doctorsData) ? doctorsData : [];
 
@@ -71,15 +71,15 @@ function Dashboard() {
           const doctorIdToFetch = matched ? matched.doctor_id : localStorage.getItem("doctorId") || fallbackDoctor?.doctor_id;
 
           if (doctorIdToFetch) {
-            const apptRes = await fetch(`http://localhost:8001/appointments/doctor/${doctorIdToFetch}`, { headers: { Authorization: `Bearer ${token}` } });
+            const apptRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/doctor/${doctorIdToFetch}`, { headers: { Authorization: `Bearer ${token}` } });
             appointmentList = await apptRes.json().catch(() => []);
             setSelectedDoctorId(String(doctorIdToFetch));
             localStorage.setItem("doctorId", String(doctorIdToFetch));
           }
         } else {
           const [doctorsRes, appointmentsRes] = await Promise.all([
-            fetch("http://localhost:8001/doctors", { headers: { Authorization: `Bearer ${token}` } }),
-            fetch("http://localhost:8001/appointments/", { headers: { Authorization: `Bearer ${token}` } }),
+            fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, { headers: { Authorization: `Bearer ${token}` } }),
+            fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/`, { headers: { Authorization: `Bearer ${token}` } }),
           ]);
           const doctorsData = await doctorsRes.json().catch(() => []);
           const appointmentsData = await appointmentsRes.json().catch(() => []);
@@ -163,7 +163,7 @@ function Dashboard() {
   const handleCancelAppointment = async (appointmentId) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:8001/appointments/${appointmentId}/cancel`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${appointmentId}/cancel`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       });
@@ -177,7 +177,7 @@ function Dashboard() {
   const handleCompleteAppointment = async (appointmentId) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:8001/appointments/${appointmentId}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/appointments/${appointmentId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: "Completed" }),

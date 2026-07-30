@@ -49,7 +49,7 @@ function Add_patient() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8001/patients/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/patients/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

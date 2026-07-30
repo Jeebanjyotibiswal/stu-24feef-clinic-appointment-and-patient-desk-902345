@@ -76,13 +76,13 @@ function Add_doctor() {
       };
 
       try {
-        response = await fetch("http://127.0.0.1:8001/doctors", {
+        response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, {
           method: "POST",
           headers,
           body: JSON.stringify(payload),
         });
       } catch {
-        response = await fetch("http://localhost:8000/doctors", {
+        response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctors`, {
           method: "POST",
           headers,
           body: JSON.stringify(payload),

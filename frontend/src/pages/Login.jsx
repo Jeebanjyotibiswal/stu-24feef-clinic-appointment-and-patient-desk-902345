@@ -34,7 +34,7 @@ const Login = () => {
       body.append("username", formData.username);
       body.append("password", formData.password);
 
-      const response = await fetch("http://localhost:8001/login", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
