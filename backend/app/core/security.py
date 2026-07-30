@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from jose import jwt
-from passlib.hash import bcrypt
+import bcrypt
 from passlib.exc import UnknownHashError
 
 # JWT Configuration
@@ -12,7 +12,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Hash Password
 def hash_password(password: str):
-    return bcrypt.hash(password)
+    if not isinstance(password, str):
+        raise TypeError("Password must be a string")
+
+    password_bytes = password.encode("utf-8")
+    if len(password_bytes) > 72:
+        raise ValueError("Password cannot be longer than 72 bytes for bcrypt")
+
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 # Verify Password
@@ -21,8 +28,11 @@ def verify_password(plain_password: str, hashed_password: str):
         return False
 
     try:
-        return bcrypt.verify(plain_password, hashed_password)
-    except (UnknownHashError, ValueError):
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
+    except (ValueError, TypeError, bcrypt.error):
         return False
 
 

@@ -71,6 +71,9 @@ def register(user: RegisterRequest):
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc))
     except IntegrityError:
         db.rollback()
         raise HTTPException(
